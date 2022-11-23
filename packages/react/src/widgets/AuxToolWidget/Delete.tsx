@@ -9,7 +9,10 @@ export interface IDeleteProps {
   style?: React.CSSProperties
 }
 
-export const Delete: React.FC<IDeleteProps> = ({ node, style }) => {
+export const Delete: React.FC<React.PropsWithChildren<IDeleteProps>> = ({
+  node,
+  style,
+}) => {
   const operation = useOperation()
   const prefix = usePrefix('aux-copy')
   if (node === node.root) return null

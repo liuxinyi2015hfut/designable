@@ -7,7 +7,9 @@ export interface IResizeHandlerProps {
   node: TreeNode
 }
 
-export const ResizeHandler: React.FC<IResizeHandlerProps> = (props) => {
+export const ResizeHandler: React.FC<
+  React.PropsWithChildren<IResizeHandlerProps>
+> = (props) => {
   const designer = useDesigner()
   const prefix = usePrefix('aux-node-resize-handler')
   const createHandler = (value: string) => {

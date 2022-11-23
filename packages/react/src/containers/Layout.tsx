@@ -4,7 +4,9 @@ import { DesignerLayoutContext } from '../context'
 import { IDesignerLayoutProps } from '../types'
 import cls from 'classnames'
 
-export const Layout: React.FC<IDesignerLayoutProps> = (props) => {
+export const Layout: React.FC<React.PropsWithChildren<IDesignerLayoutProps>> = (
+  props
+) => {
   const layout = useContext(DesignerLayoutContext)
   const ref = useRef<HTMLDivElement>()
 

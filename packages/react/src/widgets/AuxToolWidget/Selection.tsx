@@ -18,7 +18,9 @@ export interface ISelectionBoxProps {
   showHelpers: boolean
 }
 
-export const SelectionBox: React.FC<ISelectionBoxProps> = (props) => {
+export const SelectionBox: React.FC<
+  React.PropsWithChildren<ISelectionBoxProps>
+> = (props) => {
   const designer = useDesigner()
   const prefix = usePrefix('aux-selection-box')
   const innerPrefix = usePrefix('aux-selection-box-inner')

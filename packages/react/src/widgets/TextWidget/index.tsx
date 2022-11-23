@@ -10,33 +10,34 @@ export interface ITextWidgetProps {
   defaultMessage?: string | IDesignerMiniLocales
 }
 
-export const TextWidget: React.FC<ITextWidgetProps> = observer((props) => {
-  const takeLocale = (
-    message: string | IDesignerMiniLocales
-  ): React.ReactNode => {
-    if (isStr(message)) return message
-    if (isPlainObj(message)) {
-      const lang = GlobalRegistry.getDesignerLanguage()
-      for (let key in message) {
-        if (key.toLocaleLowerCase() === lang) return message[key]
+export const TextWidget: React.FC<React.PropsWithChildren<ITextWidgetProps>> =
+  observer((props) => {
+    const takeLocale = (
+      message: string | IDesignerMiniLocales
+    ): React.ReactNode => {
+      if (isStr(message)) return message
+      if (isPlainObj(message)) {
+        const lang = GlobalRegistry.getDesignerLanguage()
+        for (let key in message) {
+          if (key.toLocaleLowerCase() === lang) return message[key]
+        }
+        return
       }
-      return
+      return message
     }
-    return message
-  }
-  const takeMessage = (token: any) => {
-    if (!token) return
-    const message = isStr(token)
-      ? GlobalRegistry.getDesignerMessage(token)
-      : token
-    if (message) return takeLocale(message)
-    return token
-  }
-  return (
-    <Fragment>
-      {takeMessage(props.children) ||
-        takeMessage(props.token) ||
-        takeMessage(props.defaultMessage)}
-    </Fragment>
-  )
-})
+    const takeMessage = (token: any) => {
+      if (!token) return
+      const message = isStr(token)
+        ? GlobalRegistry.getDesignerMessage(token)
+        : token
+      if (message) return takeLocale(message)
+      return token
+    }
+    return (
+      <Fragment>
+        {takeMessage(props.children) ||
+          takeMessage(props.token) ||
+          takeMessage(props.defaultMessage)}
+      </Fragment>
+    )
+  })

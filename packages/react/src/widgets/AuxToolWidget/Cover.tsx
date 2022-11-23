@@ -15,7 +15,9 @@ interface ICoverRectProps {
   dropping?: boolean
 }
 
-const CoverRect: React.FC<ICoverRectProps> = (props) => {
+const CoverRect: React.FC<React.PropsWithChildren<ICoverRectProps>> = (
+  props
+) => {
   const prefix = usePrefix('aux-cover-rect')
   const rect = useValidNodeOffsetRect(props.node)
   const createCoverStyle = () => {

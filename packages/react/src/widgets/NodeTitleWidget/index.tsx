@@ -5,16 +5,16 @@ export interface INodeTitleWidgetProps {
   node: TreeNode
 }
 
-export const NodeTitleWidget: React.FC<INodeTitleWidgetProps> = observer(
-  (props) => {
-    const takeNode = () => {
-      const node = props.node
-      if (node.componentName === '$$ResourceNode$$') {
-        return node.children[0]
-      }
-      return node
+export const NodeTitleWidget: React.FC<
+  React.PropsWithChildren<INodeTitleWidgetProps>
+> = observer((props) => {
+  const takeNode = () => {
+    const node = props.node
+    if (node.componentName === '$$ResourceNode$$') {
+      return node.children[0]
     }
-    const node = takeNode()
-    return <Fragment>{node.getMessage('title') || node.componentName}</Fragment>
+    return node
   }
-)
+  const node = takeNode()
+  return <Fragment>{node.getMessage('title') || node.componentName}</Fragment>
+})

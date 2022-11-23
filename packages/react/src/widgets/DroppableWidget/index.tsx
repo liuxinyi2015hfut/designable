@@ -19,7 +19,9 @@ export interface IDroppableWidgetProps {
   hasChildren?: boolean
 }
 
-export const DroppableWidget: React.FC<IDroppableWidgetProps> = observer(
+export const DroppableWidget: React.FC<
+  React.PropsWithChildren<IDroppableWidgetProps>
+> = observer(
   ({
     node,
     actions,

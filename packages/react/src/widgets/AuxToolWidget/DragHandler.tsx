@@ -10,8 +10,8 @@ export interface IDragHandlerProps {
   style?: React.CSSProperties
 }
 
-export const DragHandler: React.FC<IDragHandlerProps> = observer(
-  ({ node, style }) => {
+export const DragHandler: React.FC<React.PropsWithChildren<IDragHandlerProps>> =
+  observer(({ node, style }) => {
     const designer = useDesigner()
     const prefix = usePrefix('aux-drag-handler')
     if (node === node.root || !node.allowDrag()) return null
@@ -23,7 +23,6 @@ export const DragHandler: React.FC<IDragHandlerProps> = observer(
         <IconWidget infer="Move" />
       </Button>
     )
-  }
-)
+  })
 
 DragHandler.displayName = 'DragHandler'

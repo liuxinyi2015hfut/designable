@@ -9,7 +9,9 @@ export interface IMobileSimulatorProps
   style?: React.CSSProperties
 }
 
-export const MobileSimulator: React.FC<IMobileSimulatorProps> = (props) => {
+export const MobileSimulator: React.FC<
+  React.PropsWithChildren<IMobileSimulatorProps>
+> = (props) => {
   const prefix = usePrefix('mobile-simulator')
   return (
     <div {...props} className={cls(prefix, props.className)}>

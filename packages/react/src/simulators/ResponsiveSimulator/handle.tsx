@@ -11,7 +11,9 @@ export interface IResizeHandleProps {
   type?: ResizeHandleType
 }
 
-export const ResizeHandle: React.FC<IResizeHandleProps> = (props) => {
+export const ResizeHandle: React.FC<
+  React.PropsWithChildren<IResizeHandleProps>
+> = (props) => {
   const prefix = usePrefix('resize-handle')
   return (
     <div

@@ -7,8 +7,8 @@ export interface IInsertionProps {
   workspaceId?: string
 }
 
-export const Insertion: React.FC<IInsertionProps> = observer(
-  ({ workspaceId }) => {
+export const Insertion: React.FC<React.PropsWithChildren<IInsertionProps>> =
+  observer(({ workspaceId }) => {
     const outlineDragon = useOutlineDragon(workspaceId)
     const prefix = usePrefix('outline-tree-insertion')
     const createInsertionStyle = (): React.CSSProperties => {
@@ -57,7 +57,6 @@ export const Insertion: React.FC<IInsertionProps> = observer(
     if (!outlineDragon?.closestNode) return null
 
     return <div className={prefix} style={createInsertionStyle()}></div>
-  }
-)
+  })
 
 Insertion.displayName = 'Insertion'

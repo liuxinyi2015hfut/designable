@@ -8,7 +8,7 @@ export interface IWorkspaceProps {
   description?: string
 }
 
-export const Workspace: React.FC<IWorkspaceProps> = ({
+export const Workspace: React.FC<React.PropsWithChildren<IWorkspaceProps>> = ({
   id,
   title,
   description,

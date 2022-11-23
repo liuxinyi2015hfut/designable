@@ -8,7 +8,9 @@ export interface ITranslateHandlerProps {
   node: TreeNode
 }
 
-export const TranslateHandler: React.FC<ITranslateHandlerProps> = (props) => {
+export const TranslateHandler: React.FC<
+  React.PropsWithChildren<ITranslateHandlerProps>
+> = (props) => {
   const designer = useDesigner()
   const prefix = usePrefix('aux-node-translate-handler')
   const createHandler = (value: string) => {

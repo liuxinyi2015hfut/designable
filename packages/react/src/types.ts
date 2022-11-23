@@ -27,12 +27,14 @@ export interface IWorkspaceContext {
   description?: string
 }
 
-export type DnFC<P = {}> = React.FC<P> & {
+export type DnFC<P = {}> = React.FC<React.PropsWithChildren<P>> & {
   Resource?: IResource[]
   Behavior?: IBehavior[]
 }
 
-export type DnComponent<P = {}> = React.ComponentType<P> & {
+export type DnComponent<P = {}> = React.ComponentType<
+  React.PropsWithChildren<P>
+> & {
   Resource?: IResource[]
   Behavior?: IBehavior[]
 }

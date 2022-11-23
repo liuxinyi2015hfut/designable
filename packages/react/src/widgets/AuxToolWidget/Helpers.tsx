@@ -23,7 +23,10 @@ export interface IViewportState {
   viewportIsScrollBottom?: boolean
 }
 
-export const Helpers: React.FC<IHelpersProps> = ({ node, nodeRect }) => {
+export const Helpers: React.FC<React.PropsWithChildren<IHelpersProps>> = ({
+  node,
+  nodeRect,
+}) => {
   const prefix = usePrefix('aux-helpers')
   const designer = useDesigner()
   const viewport = useViewport()

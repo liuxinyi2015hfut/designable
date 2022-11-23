@@ -10,7 +10,7 @@ export interface IViewportProps
   dragTipsDirection?: 'left' | 'right'
 }
 
-export const Viewport: React.FC<IViewportProps> = ({
+export const Viewport: React.FC<React.PropsWithChildren<IViewportProps>> = ({
   placeholder,
   dragTipsDirection,
   ...props

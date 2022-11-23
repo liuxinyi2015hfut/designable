@@ -16,7 +16,9 @@ export interface IOutlineTreeWidgetProps {
   renderActions?: (node: TreeNode) => React.ReactNode
 }
 
-export const OutlineTreeWidget: React.FC<IOutlineTreeWidgetProps> = observer(
+export const OutlineTreeWidget: React.FC<
+  React.PropsWithChildren<IOutlineTreeWidgetProps>
+> = observer(
   ({ onClose, style, renderActions, renderTitle, className, ...props }) => {
     const ref = useRef<HTMLDivElement>()
     const prefix = usePrefix('outline-tree')

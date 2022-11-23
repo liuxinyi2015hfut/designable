@@ -22,8 +22,10 @@ export interface INodeActionsWidgetActionProps
   icon?: React.ReactNode
 }
 
-export const NodeActionsWidget: React.FC<INodeActionsWidgetProps> & {
-  Action?: React.FC<INodeActionsWidgetActionProps>
+export const NodeActionsWidget: React.FC<
+  React.PropsWithChildren<INodeActionsWidgetProps>
+> & {
+  Action?: React.FC<React.PropsWithChildren<INodeActionsWidgetActionProps>>
 } = observer((props) => {
   const node = useTreeNode()
   const prefix = usePrefix('node-actions')

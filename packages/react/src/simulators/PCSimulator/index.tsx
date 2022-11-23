@@ -7,7 +7,9 @@ export interface IPCSimulatorProps
   className?: string
   style?: React.CSSProperties
 }
-export const PCSimulator: React.FC<IPCSimulatorProps> = (props) => {
+export const PCSimulator: React.FC<
+  React.PropsWithChildren<IPCSimulatorProps>
+> = (props) => {
   const prefix = usePrefix('pc-simulator')
   return (
     <div {...props} className={cls(prefix, props.className)}>

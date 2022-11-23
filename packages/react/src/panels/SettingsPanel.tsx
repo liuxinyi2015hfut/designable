@@ -9,7 +9,9 @@ export interface ISettingPanelProps {
   extra?: React.ReactNode
 }
 
-export const SettingsPanel: React.FC<ISettingPanelProps> = observer((props) => {
+export const SettingsPanel: React.FC<
+  React.PropsWithChildren<ISettingPanelProps>
+> = observer((props) => {
   const prefix = usePrefix('settings-panel')
   const workbench = useWorkbench()
   const [innerVisible, setInnerVisible] = useState(true)

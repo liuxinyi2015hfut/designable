@@ -132,62 +132,63 @@ export interface IResponsiveSimulatorProps
   style?: React.CSSProperties
 }
 
-export const ResponsiveSimulator: React.FC<IResponsiveSimulatorProps> =
-  observer((props) => {
-    const container = useRef<HTMLDivElement>()
-    const content = useRef<HTMLDivElement>()
-    const prefix = usePrefix('responsive-simulator')
-    const screen = useScreen()
-    useDesigner((engine) => {
-      useResizeEffect(container, content, engine)
-    })
-    return (
+export const ResponsiveSimulator: React.FC<
+  React.PropsWithChildren<IResponsiveSimulatorProps>
+> = observer((props) => {
+  const container = useRef<HTMLDivElement>()
+  const content = useRef<HTMLDivElement>()
+  const prefix = usePrefix('responsive-simulator')
+  const screen = useScreen()
+  useDesigner((engine) => {
+    useResizeEffect(container, content, engine)
+  })
+  return (
+    <div
+      {...props}
+      className={cls(prefix, props.className)}
+      style={{
+        height: '100%',
+        width: '100%',
+        minHeight: 100,
+        position: 'relative',
+        ...props.style,
+      }}
+    >
       <div
-        {...props}
-        className={cls(prefix, props.className)}
+        ref={container}
         style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
           height: '100%',
           width: '100%',
-          minHeight: 100,
-          position: 'relative',
-          ...props.style,
+          overflow: 'overlay',
         }}
       >
         <div
-          ref={container}
+          ref={content}
           style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            height: '100%',
-            width: '100%',
-            overflow: 'overlay',
+            width: screen.width,
+            height: screen.height,
+            paddingRight: 15,
+            paddingBottom: 15,
+            position: 'relative',
+            boxSizing: 'border-box',
+            overflow: 'hidden',
           }}
         >
-          <div
-            ref={content}
-            style={{
-              width: screen.width,
-              height: screen.height,
-              paddingRight: 15,
-              paddingBottom: 15,
-              position: 'relative',
-              boxSizing: 'border-box',
-              overflow: 'hidden',
-            }}
-          >
-            {props.children}
-            <ResizeHandle type={ResizeHandleType.Resize}>
-              <IconWidget infer="DragMove" style={{ pointerEvents: 'none' }} />
-            </ResizeHandle>
-            <ResizeHandle type={ResizeHandleType.ResizeHeight}>
-              <IconWidget infer="Menu" style={{ pointerEvents: 'none' }} />
-            </ResizeHandle>
-            <ResizeHandle type={ResizeHandleType.ResizeWidth}>
-              <IconWidget infer="Menu" style={{ pointerEvents: 'none' }} />
-            </ResizeHandle>
-          </div>
+          {props.children}
+          <ResizeHandle type={ResizeHandleType.Resize}>
+            <IconWidget infer="DragMove" style={{ pointerEvents: 'none' }} />
+          </ResizeHandle>
+          <ResizeHandle type={ResizeHandleType.ResizeHeight}>
+            <IconWidget infer="Menu" style={{ pointerEvents: 'none' }} />
+          </ResizeHandle>
+          <ResizeHandle type={ResizeHandleType.ResizeWidth}>
+            <IconWidget infer="Menu" style={{ pointerEvents: 'none' }} />
+          </ResizeHandle>
         </div>
       </div>
-    )
-  })
+    </div>
+  )
+})
