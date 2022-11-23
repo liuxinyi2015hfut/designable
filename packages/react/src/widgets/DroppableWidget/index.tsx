@@ -1,7 +1,7 @@
 import React from 'react'
 import { TreeNode } from '@designable/core'
 import { observer } from '@formily/reactive-react'
-import { useTreeNode, useNodeIdProps } from '../../hooks'
+import { useTreeNode, useNodeIdProps, usePrefix } from '../../hooks'
 import { NodeTitleWidget } from '../NodeTitleWidget'
 import {
   NodeActionsWidget,
@@ -36,12 +36,13 @@ export const DroppableWidget: React.FC<
     const nodeId = useNodeIdProps(node)
     const target = node ?? currentNode
     const hasChildren = hasChildrenProp ?? target.children?.length > 0
+    const prefixCls = usePrefix('droppable')
     return (
       <div {...nodeId} className={className} style={style}>
         {hasChildren ? (
           props.children
         ) : placeholder ? (
-          <div style={{ height }} className="dn-droppable-placeholder">
+          <div style={{ height }} className={prefixCls + '-placeholder'}>
             <NodeTitleWidget node={target} />
           </div>
         ) : (
