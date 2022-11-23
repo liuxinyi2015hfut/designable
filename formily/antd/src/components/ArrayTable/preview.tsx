@@ -27,7 +27,7 @@ import { AllLocales } from '../../locales'
 
 const ensureObjectItemsNode = createEnsureTypeItemsNode('object')
 
-const HeaderCell: React.FC = (props: any) => {
+const HeaderCell: React.FC<React.PropsWithChildren<unknown>> = (props: any) => {
   return (
     <th
       {...props}
@@ -38,7 +38,7 @@ const HeaderCell: React.FC = (props: any) => {
   )
 }
 
-const BodyCell: React.FC = (props: any) => {
+const BodyCell: React.FC<React.PropsWithChildren<unknown>> = (props: any) => {
   return (
     <td
       {...props}

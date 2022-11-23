@@ -10,7 +10,7 @@ export interface ImageInputProps extends Omit<InputProps, 'onChange'> {
   onChange?: (value: string) => void
 }
 
-export const ImageInput: React.FC<ImageInputProps> = ({
+export const ImageInput: React.FC<React.PropsWithChildren<ImageInputProps>> = ({
   className,
   style,
   ...props
@@ -48,7 +48,9 @@ export const ImageInput: React.FC<ImageInputProps> = ({
   )
 }
 
-export const BackgroundImageInput: React.FC<ImageInputProps> = (props) => {
+export const BackgroundImageInput: React.FC<
+  React.PropsWithChildren<ImageInputProps>
+> = (props) => {
   const addBgValue = (value: any) => {
     if (/url\([^)]+\)/.test(value)) {
       return value

@@ -10,7 +10,9 @@ export interface ICornerInputProps {
   onChange?: (value: string) => void
 }
 
-export const CornerInput: React.FC<ICornerInputProps> = (props) => {
+export const CornerInput: React.FC<
+  React.PropsWithChildren<ICornerInputProps>
+> = (props) => {
   const prefix = usePrefix('corner-input')
   const [current, setCurrent] = useState(props.value)
   useEffect(() => {

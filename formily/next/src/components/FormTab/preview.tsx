@@ -34,7 +34,7 @@ const getCorrectActiveKey = (activeKey: string, tabs: TreeNode[]) => {
 }
 
 export const FormTab: DnFC<TabProps> & {
-  TabPane?: React.FC<TabItemProps>
+  TabPane?: React.FC<React.PropsWithChildren<TabItemProps>>
 } = observer((props) => {
   const [activeKey, setActiveKey] = useState<string>()
   const nodeId = useNodeIdProps()

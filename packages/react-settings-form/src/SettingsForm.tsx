@@ -24,7 +24,9 @@ const GlobalState = {
   idleRequest: null,
 }
 
-export const SettingsForm: React.FC<ISettingFormProps> = observer(
+export const SettingsForm: React.FC<
+  React.PropsWithChildren<ISettingFormProps>
+> = observer(
   (props) => {
     const workbench = useWorkbench()
     const currentWorkspace =

@@ -116,7 +116,9 @@ export const renderSandboxContent = (render: (scope?: any) => JSX.Element) => {
   }
 }
 
-export const Sandbox: React.FC<ISandboxProps> = (props) => {
+export const Sandbox: React.FC<React.PropsWithChildren<ISandboxProps>> = (
+  props
+) => {
   const { cssAssets, jsAssets, scope, style, ...iframeProps } = props
   return React.createElement('iframe', {
     ...iframeProps,

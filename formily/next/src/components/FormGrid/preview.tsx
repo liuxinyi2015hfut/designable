@@ -17,7 +17,9 @@ import './styles.less'
 type formilyGrid = typeof FormilyGird
 
 export const FormGrid: DnFC<React.ComponentProps<formilyGrid>> & {
-  GridColumn?: React.FC<React.ComponentProps<formilyGrid['GridColumn']>>
+  GridColumn?: React.FC<
+    React.PropsWithChildren<React.ComponentProps<formilyGrid['GridColumn']>>
+  >
 } = observer((props) => {
   const node = useTreeNode()
   const nodeId = useNodeIdProps()

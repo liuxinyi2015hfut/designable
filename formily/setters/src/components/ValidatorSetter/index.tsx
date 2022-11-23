@@ -143,30 +143,30 @@ const ValidatorSchema: ISchema = {
   },
 }
 
-export const ValidatorSetter: React.FC<IValidatorSetterProps> = observer(
-  (props) => {
-    const field = useField<ArrayField>()
-    return (
-      <FoldItem label={field.title}>
-        <FoldItem.Base>
-          <Select
-            value={Array.isArray(props.value) ? undefined : props.value}
-            onChange={props.onChange}
-            allowClear
-            placeholder={GlobalRegistry.getDesignerMessage(
-              'SettingComponents.ValidatorSetter.pleaseSelect'
-            )}
-            options={GlobalRegistry.getDesignerMessage(
-              'SettingComponents.ValidatorSetter.formats'
-            )}
-          />
-        </FoldItem.Base>
-        <FoldItem.Extra>
-          <SchemaContext.Provider value={new Schema(ValidatorSchema)}>
-            <ArrayItems />
-          </SchemaContext.Provider>
-        </FoldItem.Extra>
-      </FoldItem>
-    )
-  }
-)
+export const ValidatorSetter: React.FC<
+  React.PropsWithChildren<IValidatorSetterProps>
+> = observer((props) => {
+  const field = useField<ArrayField>()
+  return (
+    <FoldItem label={field.title}>
+      <FoldItem.Base>
+        <Select
+          value={Array.isArray(props.value) ? undefined : props.value}
+          onChange={props.onChange}
+          allowClear
+          placeholder={GlobalRegistry.getDesignerMessage(
+            'SettingComponents.ValidatorSetter.pleaseSelect'
+          )}
+          options={GlobalRegistry.getDesignerMessage(
+            'SettingComponents.ValidatorSetter.formats'
+          )}
+        />
+      </FoldItem.Base>
+      <FoldItem.Extra>
+        <SchemaContext.Provider value={new Schema(ValidatorSchema)}>
+          <ArrayItems />
+        </SchemaContext.Provider>
+      </FoldItem.Extra>
+    </FoldItem>
+  )
+})

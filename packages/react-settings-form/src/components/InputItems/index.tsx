@@ -26,8 +26,8 @@ export interface IInputItemProps {
 
 const InputItemsContext = React.createContext<IInputItemsContext>(null)
 
-export const InputItems: React.FC<IInputItemsProps> & {
-  Item: React.FC<IInputItemProps>
+export const InputItems: React.FC<React.PropsWithChildren<IInputItemsProps>> & {
+  Item: React.FC<React.PropsWithChildren<IInputItemProps>>
 } = (props) => {
   const prefix = usePrefix('input-items')
   return (

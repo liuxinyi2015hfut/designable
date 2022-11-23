@@ -10,7 +10,9 @@ export interface IPositionInputProps {
   onChange?: (value: string) => void
 }
 
-export const PositionInput: React.FC<IPositionInputProps> = (props) => {
+export const PositionInput: React.FC<
+  React.PropsWithChildren<IPositionInputProps>
+> = (props) => {
   const prefix = usePrefix('position-input')
   const [current, setCurrent] = useState(props.value)
   useEffect(() => {

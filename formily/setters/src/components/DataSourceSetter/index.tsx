@@ -24,72 +24,72 @@ export interface IDataSourceSetterProps {
   effects?: (form: Form<any>) => void
 }
 
-export const DataSourceSetter: React.FC<IDataSourceSetterProps> = observer(
-  (props) => {
-    const {
-      className,
-      value = [],
-      onChange,
-      allowTree = true,
-      allowExtendOption = true,
-      defaultOptionValue,
-      effects = () => {},
-    } = props
-    const theme = useTheme()
-    const prefix = usePrefix('data-source-setter')
-    const [modalVisible, setModalVisible] = useState(false)
-    const treeDataSource: ITreeDataSource = useMemo(
-      () =>
-        observable({
-          dataSource: transformValueToData(value),
-          selectedKey: '',
-        }),
-      [value, modalVisible]
-    )
-    const openModal = () => setModalVisible(true)
-    const closeModal = () => setModalVisible(false)
-    return (
-      <Fragment>
-        <Button block onClick={openModal}>
+export const DataSourceSetter: React.FC<
+  React.PropsWithChildren<IDataSourceSetterProps>
+> = observer((props) => {
+  const {
+    className,
+    value = [],
+    onChange,
+    allowTree = true,
+    allowExtendOption = true,
+    defaultOptionValue,
+    effects = () => {},
+  } = props
+  const theme = useTheme()
+  const prefix = usePrefix('data-source-setter')
+  const [modalVisible, setModalVisible] = useState(false)
+  const treeDataSource: ITreeDataSource = useMemo(
+    () =>
+      observable({
+        dataSource: transformValueToData(value),
+        selectedKey: '',
+      }),
+    [value, modalVisible]
+  )
+  const openModal = () => setModalVisible(true)
+  const closeModal = () => setModalVisible(false)
+  return (
+    <Fragment>
+      <Button block onClick={openModal}>
+        <TextWidget token="SettingComponents.DataSourceSetter.configureDataSource" />
+      </Button>
+      <Modal
+        title={
           <TextWidget token="SettingComponents.DataSourceSetter.configureDataSource" />
-        </Button>
-        <Modal
-          title={
-            <TextWidget token="SettingComponents.DataSourceSetter.configureDataSource" />
-          }
-          width="65%"
-          bodyStyle={{ padding: 10 }}
-          transitionName=""
-          maskTransitionName=""
-          visible={modalVisible}
-          onCancel={closeModal}
-          onOk={() => {
-            onChange(transformDataToValue(treeDataSource.dataSource))
-            closeModal()
-          }}
+        }
+        width="65%"
+        bodyStyle={{ padding: 10 }}
+        transitionName=""
+        maskTransitionName=""
+        visible={modalVisible}
+        onCancel={closeModal}
+        onOk={() => {
+          onChange(transformDataToValue(treeDataSource.dataSource))
+          closeModal()
+        }}
+      >
+        <div
+          className={`${cls(prefix, className)} ${prefix + '-' + theme} ${
+            prefix + '-layout'
+          }`}
         >
-          <div
-            className={`${cls(prefix, className)} ${prefix + '-' + theme} ${
-              prefix + '-layout'
-            }`}
-          >
-            <div className={`${prefix + '-layout-item left'}`}>
-              <TreePanel
-                defaultOptionValue={defaultOptionValue}
-                allowTree={allowTree}
-                treeDataSource={treeDataSource}
-              ></TreePanel>
-            </div>
-            <div className={`${prefix + '-layout-item right'}`}>
-              <DataSettingPanel
-                allowExtendOption={allowExtendOption}
-                treeDataSource={treeDataSource}
-                effects={effects}
-              ></DataSettingPanel>
-            </div>
+          <div className={`${prefix + '-layout-item left'}`}>
+            <TreePanel
+              defaultOptionValue={defaultOptionValue}
+              allowTree={allowTree}
+              treeDataSource={treeDataSource}
+            ></TreePanel>
           </div>
-        </Modal>
-      </Fragment>
-    )
-  }
-)
+          <div className={`${prefix + '-layout-item right'}`}>
+            <DataSettingPanel
+              allowExtendOption={allowExtendOption}
+              treeDataSource={treeDataSource}
+              effects={effects}
+            ></DataSettingPanel>
+          </div>
+        </div>
+      </Modal>
+    </Fragment>
+  )
+})

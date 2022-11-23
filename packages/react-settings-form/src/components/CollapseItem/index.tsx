@@ -10,7 +10,9 @@ export interface ICollapseItemProps {
   defaultExpand?: boolean
 }
 
-export const CollapseItem: React.FC<ICollapseItemProps> = observer((props) => {
+export const CollapseItem: React.FC<
+  React.PropsWithChildren<ICollapseItemProps>
+> = observer((props) => {
   const prefix = usePrefix('collapse-item')
   const field = useField()
   const [expand, setExpand] = useState(props.defaultExpand ?? true)

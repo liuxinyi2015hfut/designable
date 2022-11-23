@@ -3,7 +3,7 @@ export * from './exports'
 import { globalThisPolyfill } from '@designable/shared'
 
 if (globalThisPolyfill?.['Designable']?.['Core']) {
-  if (module.exports) {
+  if (module && module.exports) {
     module.exports = {
       __esModule: true,
       ...globalThisPolyfill['Designable']['Core'],

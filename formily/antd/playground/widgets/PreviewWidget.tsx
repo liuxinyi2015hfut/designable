@@ -33,11 +33,13 @@ import { Card, Slider, Rate } from 'antd'
 import { TreeNode } from '@designable/core'
 import { transformToSchema } from '@designable/formily-transformer'
 
-const Text: React.FC<{
-  value?: string
-  content?: string
-  mode?: 'normal' | 'h1' | 'h2' | 'h3' | 'p'
-}> = ({ value, mode, content, ...props }) => {
+const Text: React.FC<
+  React.PropsWithChildren<{
+    value?: string
+    content?: string
+    mode?: 'normal' | 'h1' | 'h2' | 'h3' | 'p'
+  }>
+> = ({ value, mode, content, ...props }) => {
   const tagName = mode === 'normal' || !mode ? 'div' : mode
   return React.createElement(tagName, props, value || content)
 }
@@ -80,7 +82,9 @@ export interface IPreviewWidgetProps {
   tree: TreeNode
 }
 
-export const PreviewWidget: React.FC<IPreviewWidgetProps> = (props) => {
+export const PreviewWidget: React.FC<
+  React.PropsWithChildren<IPreviewWidgetProps>
+> = (props) => {
   const form = useMemo(() => createForm(), [])
   const { form: formProps, schema } = transformToSchema(props.tree)
   return (

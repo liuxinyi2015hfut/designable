@@ -20,7 +20,9 @@ export interface MonacoInputProps extends EditorProps {
   onChange?: (value: string) => void
 }
 
-export const MonacoInput: React.FC<MonacoInputProps> & {
+export const MonacoInput: React.FC<
+  React.PropsWithChildren<MonacoInputProps>
+> & {
   loader?: typeof loader
 } = ({
   className,

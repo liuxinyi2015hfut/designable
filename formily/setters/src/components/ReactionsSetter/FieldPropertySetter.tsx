@@ -19,9 +19,9 @@ const template = (code: string) => {
   return code.trim()
 }
 
-export const FieldPropertySetter: React.FC<IFieldPropertySetterProps> = (
-  props
-) => {
+export const FieldPropertySetter: React.FC<
+  React.PropsWithChildren<IFieldPropertySetterProps>
+> = (props) => {
   const [selectKeys, setSelectKeys] = useState(['visible'])
   const prefix = usePrefix('field-property-setter')
   const value = { ...props.value }

@@ -9,7 +9,9 @@ export interface IColorInputProps {
   onChange?: (color: string) => void
 }
 
-export const ColorInput: React.FC<IColorInputProps> = (props) => {
+export const ColorInput: React.FC<React.PropsWithChildren<IColorInputProps>> = (
+  props
+) => {
   const container = useRef<HTMLDivElement>()
   const prefix = usePrefix('color-input')
   const color = props.value as string

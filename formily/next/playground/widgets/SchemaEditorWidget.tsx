@@ -11,9 +11,9 @@ export interface ISchemaEditorWidgetProps {
   onChange?: (tree: ITreeNode) => void
 }
 
-export const SchemaEditorWidget: React.FC<ISchemaEditorWidgetProps> = (
-  props
-) => {
+export const SchemaEditorWidget: React.FC<
+  React.PropsWithChildren<ISchemaEditorWidgetProps>
+> = (props) => {
   return (
     <MonacoInput
       {...props}

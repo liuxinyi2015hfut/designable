@@ -52,7 +52,9 @@ const createTypes = (
   })
 }
 
-export function createPolyInput(polyTypes: PolyTypes = []): React.FC<IInput> {
+export function createPolyInput(
+  polyTypes: PolyTypes = []
+): React.FC<React.PropsWithChildren<IInput>> {
   return ({
     className,
     style,

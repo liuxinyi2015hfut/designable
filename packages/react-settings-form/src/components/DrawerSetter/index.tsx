@@ -12,7 +12,9 @@ export interface IDrawerSetterProps {
   triggerProps: ButtonProps
 }
 
-export const DrawerSetter: React.FC<IDrawerSetterProps> = observer((props) => {
+export const DrawerSetter: React.FC<
+  React.PropsWithChildren<IDrawerSetterProps>
+> = observer((props) => {
   const node = useTreeNode()
   const field = useField()
   const [visible, setVisible] = useState(false)

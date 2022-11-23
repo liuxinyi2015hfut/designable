@@ -87,7 +87,9 @@ const transformDataSource = (node: TreeNode) => {
   return []
 }
 
-export const PathSelector: React.FC<IPathSelectorProps> = (props) => {
+export const PathSelector: React.FC<
+  React.PropsWithChildren<IPathSelectorProps>
+> = (props) => {
   const baseNode = useCurrentNode()
   const dataSource = transformDataSource(baseNode)
   const findNode = (dataSource: any[], value: string) => {
