@@ -1,12 +1,12 @@
 import React, { useRef, useState, useLayoutEffect } from 'react'
 import { TreeNode } from '@designable/core'
 import { reaction } from '@formily/reactive'
-import cls from 'classnames'
-import { useDesigner, usePrefix, useViewport } from '../../hooks'
+import { usePrefix, useViewport } from '../../hooks'
 import { Selector } from './Selector'
 import { Copy } from './Copy'
 import { Delete } from './Delete'
 import { DragHandler } from './DragHandler'
+import cls from 'classnames'
 
 const HELPER_DEBOUNCE_TIMEOUT = 100
 
@@ -28,7 +28,6 @@ export const Helpers: React.FC<React.PropsWithChildren<IHelpersProps>> = ({
   nodeRect,
 }) => {
   const prefix = usePrefix('aux-helpers')
-  const designer = useDesigner()
   const viewport = useViewport()
   const unmountRef = useRef(false)
   const ref = useRef<HTMLDivElement>()
@@ -46,7 +45,7 @@ export const Helpers: React.FC<React.PropsWithChildren<IHelpersProps>> = ({
       ) {
         return 'inner-top'
       } else if (
-        viewport.isScrollBottom &&
+        nodeRect.bottom >= viewport.scrollY + viewport.height &&
         nodeRect.height + helpersRect.height > viewport.height
       ) {
         return 'inner-bottom'

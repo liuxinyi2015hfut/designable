@@ -38,7 +38,7 @@ export const DroppableWidget: React.FC<
     const hasChildren = hasChildrenProp ?? target.children?.length > 0
     const prefixCls = usePrefix('droppable')
     return (
-      <div {...nodeId} className={className} style={style}>
+      <div {...nodeId} {...props} className={className} style={style}>
         {hasChildren ? (
           props.children
         ) : placeholder ? (

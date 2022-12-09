@@ -1,6 +1,29 @@
+import { isValidNumber } from './types'
 export interface IPoint {
   x: number
   y: number
+}
+
+export interface ILineSegment {
+  start: IPoint
+  end: IPoint
+}
+
+export interface IRectEdgeLines {
+  v: ILineSegment[]
+  h: ILineSegment[]
+}
+
+export function isRect(rect: any): rect is IRect {
+  return rect?.x && rect?.y && rect?.width && rect?.height
+}
+
+export function isPoint(val: any): val is IPoint {
+  return isValidNumber(val?.x) && isValidNumber(val?.y)
+}
+
+export function isLineSegment(val: any): val is ILineSegment {
+  return isPoint(val?.start) && isPoint(val?.end)
 }
 
 export class Point implements IPoint {
@@ -9,6 +32,15 @@ export class Point implements IPoint {
   constructor(x: number, y: number) {
     this.x = x
     this.y = y
+  }
+}
+
+export class LineSegment {
+  start: IPoint
+  end: IPoint
+  constructor(start: IPoint, end: IPoint) {
+    this.start = { ...start }
+    this.end = { ...end }
   }
 }
 
@@ -49,6 +81,15 @@ export function isPointInRect(point: IPoint, rect: IRect, sensitive = true) {
     point.x <= rect.x + rect.width - boundSensor(rect.width) &&
     point.y >= rect.y + boundSensor(rect.height) &&
     point.y <= rect.y + rect.height - boundSensor(rect.height)
+  )
+}
+
+export function isEqualRect(target: IRect, source: IRect) {
+  return (
+    target?.x === source?.x &&
+    target.y === source.y &&
+    target.width === source.width &&
+    target.height === source.height
   )
 }
 
@@ -246,8 +287,8 @@ export function calcRectByStartEndPoint(
       new DOMRect(
         drawStartX,
         drawStartY,
-        Math.abs(endPoint.x - startPoint.x) - scrollX,
-        Math.abs(endPoint.y - startPoint.y) - scrollY
+        Math.abs(endPoint.x - startPoint.x + scrollX),
+        Math.abs(endPoint.y - startPoint.y + scrollY)
       )
     )
   } else if (
@@ -275,9 +316,311 @@ export function calcRectByStartEndPoint(
       new DOMRect(
         drawStartX,
         drawStartY,
-        Math.abs(endPoint.x - startPoint.x) - scrollX,
-        Math.abs(endPoint.y - startPoint.y) - scrollY
+        Math.abs(endPoint.x - startPoint.x + scrollX),
+        Math.abs(endPoint.y - startPoint.y + scrollY)
       )
     )
   }
+}
+
+export function calcEdgeLinesOfRect(rect: IRect): IRectEdgeLines {
+  return {
+    v: [
+      new LineSegment(
+        new Point(rect.x, rect.y),
+        new Point(rect.x, rect.y + rect.height)
+      ),
+      new LineSegment(
+        new Point(rect.x + rect.width / 2, rect.y),
+        new Point(rect.x + rect.width / 2, rect.y + rect.height)
+      ),
+      new LineSegment(
+        new Point(rect.x + rect.width, rect.y),
+        new Point(rect.x + rect.width, rect.y + rect.height)
+      ),
+    ],
+    h: [
+      new LineSegment(
+        new Point(rect.x, rect.y),
+        new Point(rect.x + rect.width, rect.y)
+      ),
+      new LineSegment(
+        new Point(rect.x, rect.y + rect.height / 2),
+        new Point(rect.x + rect.width, rect.y + rect.height / 2)
+      ),
+      new LineSegment(
+        new Point(rect.x, rect.y + rect.height),
+        new Point(rect.x + rect.width, rect.y + rect.height)
+      ),
+    ],
+  }
+}
+
+export function calcRectOfAxisLineSegment(line: ILineSegment) {
+  if (!isLineSegment(line)) return
+  const isXAxis = line.start.x === line.end.x
+  return new DOMRect(
+    line.start.x,
+    line.start.y,
+    isXAxis ? 0 : line.end.x - line.start.x,
+    isXAxis ? line.end.y - line.start.y : 0
+  )
+}
+
+export function calcSpaceBlockOfRect(
+  target: IRect,
+  source: IRect,
+  type?: string
+) {
+  const targetRect = new DOMRect(
+    target.x,
+    target.y,
+    target.width,
+    target.height
+  )
+  const sourceRect = new DOMRect(
+    source.x,
+    source.y,
+    source.width,
+    source.height
+  )
+  if (sourceRect.bottom < targetRect.top && sourceRect.left > targetRect.right)
+    return
+  if (sourceRect.top > targetRect.bottom && sourceRect.left > targetRect.right)
+    return
+  if (sourceRect.bottom < targetRect.top && sourceRect.right < targetRect.left)
+    return
+  if (sourceRect.top > targetRect.bottom && sourceRect.right < targetRect.left)
+    return
+  if (sourceRect.bottom < targetRect.top) {
+    const distance = targetRect.top - sourceRect.bottom
+    const left = Math.min(sourceRect.left, targetRect.left)
+    const right = Math.max(sourceRect.right, targetRect.right)
+    if (type && type !== 'top') return
+    return {
+      type: 'top',
+      distance,
+      rect: new DOMRect(left, sourceRect.bottom, right - left, distance),
+    }
+  } else if (sourceRect.top > targetRect.bottom) {
+    const distance = sourceRect.top - targetRect.bottom
+    const left = Math.min(sourceRect.left, targetRect.left)
+    const right = Math.max(sourceRect.right, targetRect.right)
+    if (type && type !== 'bottom') return
+    return {
+      type: 'bottom',
+      distance,
+      rect: new DOMRect(left, targetRect.bottom, right - left, distance),
+    }
+  } else if (sourceRect.right < targetRect.left) {
+    const distance = targetRect.left - sourceRect.right
+    const top = Math.min(sourceRect.top, targetRect.top)
+    const bottom = Math.max(sourceRect.bottom, targetRect.bottom)
+    if (type && type !== 'left') return
+    return {
+      type: 'left',
+      distance,
+      rect: new DOMRect(sourceRect.right, top, distance, bottom - top),
+    }
+  } else if (sourceRect.left > targetRect.right) {
+    const distance = sourceRect.left - targetRect.right
+    const top = Math.min(sourceRect.top, targetRect.top)
+    const bottom = Math.max(sourceRect.bottom, targetRect.bottom)
+    if (type && type !== 'right') return
+    return {
+      type: 'right',
+      distance,
+      rect: new DOMRect(targetRect.right, top, distance, bottom - top),
+    }
+  }
+}
+
+export function calcExtendsLineSegmentOfRect(
+  targetRect: DOMRect,
+  referRect: DOMRect
+) {
+  if (
+    referRect.right < targetRect.right &&
+    targetRect.left <= referRect.right
+  ) {
+    //右侧
+    if (referRect.bottom < targetRect.top) {
+      //上方
+      return {
+        start: { x: referRect.right, y: referRect.bottom },
+        end: { x: targetRect.right, y: referRect.bottom },
+      }
+    } else if (referRect.top > targetRect.bottom) {
+      //下方
+      return {
+        start: { x: referRect.right, y: referRect.top },
+        end: { x: targetRect.right, y: referRect.top },
+      }
+    }
+  } else if (
+    referRect.left > targetRect.left &&
+    targetRect.right >= referRect.left
+  ) {
+    //左侧
+    if (referRect.bottom < targetRect.top) {
+      //上方
+      return {
+        start: { x: targetRect.left, y: referRect.bottom },
+        end: { x: referRect.left, y: referRect.bottom },
+      }
+    } else if (referRect.top > targetRect.bottom) {
+      //下方
+      return {
+        start: { x: targetRect.left, y: referRect.top },
+        end: { x: referRect.left, y: referRect.top },
+      }
+    }
+  }
+  if (referRect.top < targetRect.top && targetRect.bottom >= referRect.top) {
+    //refer在上方
+    if (referRect.right < targetRect.left) {
+      //右侧
+      return {
+        start: { x: referRect.right, y: referRect.bottom },
+        end: { x: referRect.right, y: targetRect.bottom },
+      }
+    } else if (referRect.left > targetRect.right) {
+      //左侧
+      return {
+        start: { x: referRect.left, y: referRect.bottom },
+        end: { x: referRect.left, y: targetRect.bottom },
+      }
+    }
+  } else if (
+    referRect.bottom > targetRect.bottom &&
+    referRect.top <= targetRect.bottom
+  ) {
+    //refer下方
+    if (referRect.right < targetRect.left) {
+      //右侧
+      return {
+        start: { x: referRect.right, y: targetRect.top },
+        end: { x: referRect.right, y: referRect.top },
+      }
+    } else if (referRect.left > targetRect.right) {
+      //左侧
+      return {
+        start: { x: referRect.left, y: targetRect.top },
+        end: { x: referRect.left, y: referRect.top },
+      }
+    }
+  }
+}
+
+export function calcOffsetOfSnapLineSegmentToEdge(
+  line: ILineSegment,
+  current: IRect
+) {
+  const edges = calcEdgeLinesOfRect(current)
+  const isVerticalLine = line.start.x === line.end.x
+  if (isVerticalLine) {
+    return { x: calcMinDistanceValue(edges.x, line.start.x) - current.x, y: 0 }
+  }
+  function calcEdgeLinesOfRect(rect: IRect) {
+    return {
+      x: [rect.x, rect.x + rect.width / 2, rect.x + rect.width],
+      y: [rect.y, rect.y + rect.height / 2, rect.y + rect.height],
+    }
+  }
+  function calcMinDistanceValue(edges: number[], targetValue: number) {
+    let minDistance = Infinity,
+      minDistanceIndex = -1
+    for (let i = 0; i < edges.length; i++) {
+      const distance = Math.abs(edges[i] - targetValue)
+      if (minDistance > distance) {
+        minDistance = distance
+        minDistanceIndex = i
+      }
+    }
+    return edges[minDistanceIndex]
+  }
+
+  return { x: 0, y: calcMinDistanceValue(edges.y, line.start.y) - current.y }
+}
+
+export function calcDistanceOfSnapLineToEdges(
+  line: ILineSegment,
+  edges: IRectEdgeLines
+) {
+  let distance = Infinity
+  if (line?.start?.y === line?.end?.y) {
+    edges.h.forEach((target) => {
+      const _distance = Math.abs(target.start.y - line.start.y)
+      if (_distance < distance) {
+        distance = _distance
+      }
+    })
+  } else if (line?.start?.x === line?.end?.x) {
+    edges.v.forEach((target) => {
+      const _distance = Math.abs(target.start.x - line.start.x)
+      if (_distance < distance) {
+        distance = _distance
+      }
+    })
+  } else {
+    throw new Error('can not calculate slash distance')
+  }
+  return distance
+}
+
+export function calcCombineSnapLineSegment(
+  target: ILineSegment,
+  source: ILineSegment
+): ILineSegment {
+  if (target.start.x === target.end.x) {
+    return new LineSegment(
+      new Point(
+        target.start.x,
+        target.start.y > source.start.y ? source.start.y : target.start.y
+      ),
+      new Point(
+        target.start.x,
+        target.end.y > source.end.y ? target.end.y : source.end.y
+      )
+    )
+  }
+
+  return new LineSegment(
+    new Point(
+      target.start.x > source.start.x ? source.start.x : target.start.x,
+      target.start.y
+    ),
+    new Point(
+      target.end.x > source.end.x ? target.end.x : source.end.x,
+      target.end.y
+    )
+  )
+}
+
+export function calcClosestEdges(
+  line: ILineSegment,
+  edges: IRectEdgeLines
+): [number, ILineSegment] {
+  let result: ILineSegment
+  let distance = Infinity
+  if (line?.start?.y === line?.end?.y) {
+    edges.h.forEach((target) => {
+      const _distance = Math.abs(target.start.y - line.start.y)
+      if (_distance < distance) {
+        distance = _distance
+        result = target
+      }
+    })
+  } else if (line?.start?.x === line?.end?.x) {
+    edges.v.forEach((target) => {
+      const _distance = Math.abs(target.start.x - line.start.x)
+      if (_distance < distance) {
+        distance = _distance
+        result = target
+      }
+    })
+  } else {
+    throw new Error('can not calculate slash distance')
+  }
+  return [distance, result]
 }

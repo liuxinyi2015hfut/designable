@@ -54,7 +54,7 @@ const getDefaultKey = (children: React.ReactNode) => {
 export const CompositePanel: React.FC<
   React.PropsWithChildren<ICompositePanelProps>
 > & {
-  Item?: React.FC<React.PropsWithChildren<ICompositePanelItemProps>>
+  Item: React.FC<React.PropsWithChildren<ICompositePanelItemProps>>
 } = (props) => {
   const prefix = usePrefix('composite-panel')
   const [activeKey, setActiveKey] = useState<string | number>(

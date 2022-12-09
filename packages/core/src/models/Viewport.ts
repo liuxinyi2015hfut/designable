@@ -20,7 +20,18 @@ export interface IViewportProps {
   viewportElement: HTMLElement
   contentWindow: Window
   nodeIdAttrName: string
+  moveSensitive?: boolean
+  moveInsertionType?: IViewportMoveInsertionType
 }
+
+export interface IViewportData {
+  scrollX?: number
+  scrollY?: number
+  width?: number
+  height?: number
+}
+
+export type IViewportMoveInsertionType = 'all' | 'inline' | 'block'
 
 /**
  * 视口模型
@@ -36,6 +47,8 @@ export class Viewport {
 
   viewportElement: HTMLElement
 
+  dragStartSnapshot: IViewportData
+
   scrollX = 0
 
   scrollY = 0
@@ -48,9 +61,15 @@ export class Viewport {
 
   nodeIdAttrName: string
 
+  moveSensitive: boolean
+
+  moveInsertionType: IViewportMoveInsertionType
+
   constructor(props: IViewportProps) {
     this.workspace = props.workspace
     this.engine = props.engine
+    this.moveSensitive = props.moveSensitive ?? false
+    this.moveInsertionType = props.moveInsertionType ?? 'all'
     this.viewportElement = props.viewportElement
     this.contentWindow = props.contentWindow
     this.nodeIdAttrName = props.nodeIdAttrName
@@ -71,22 +90,30 @@ export class Viewport {
   get isScrollRight() {
     if (this.isIframe) {
       return (
-        this.width + this.scrollX >=
+        this.width + this.contentWindow.scrollX >=
         this.contentWindow?.document?.body?.scrollWidth
       )
     } else if (this.viewportElement) {
-      return this.width + this.scrollX >= this.viewportElement?.scrollWidth
+      return (
+        this.viewportElement.offsetWidth + this.scrollX >=
+        this.viewportElement.scrollWidth
+      )
     }
   }
 
   get isScrollBottom() {
     if (this.isIframe) {
+      if (!this.contentWindow?.document?.body) return false
       return (
-        this.height + this.scrollY >=
-        this.contentWindow?.document?.body?.scrollHeight
+        this.height + this.contentWindow.scrollY >=
+        this.contentWindow.document.body.scrollHeight
       )
     } else if (this.viewportElement) {
-      return this.height + this.scrollY >= this.viewportElement?.scrollHeight
+      if (!this.viewportElement) return false
+      return (
+        this.viewportElement.offsetHeight + this.viewportElement.scrollTop >=
+        this.viewportElement.scrollHeight
+      )
     }
   }
 
@@ -137,21 +164,40 @@ export class Viewport {
     if (!this.viewportElement) return 1
     const clientRect = this.viewportElement.getBoundingClientRect()
     const offsetWidth = this.viewportElement.offsetWidth
+    if (!clientRect.width || !offsetWidth) return 1
     return Math.round(clientRect.width / offsetWidth)
   }
 
-  digestViewport() {
+  get dragScrollXDelta() {
+    return this.scrollX - this.dragStartSnapshot.scrollX
+  }
+
+  get dragScrollYDelta() {
+    return this.scrollY - this.dragStartSnapshot.scrollY
+  }
+
+  getCurrentData() {
+    const data: IViewportData = {}
     if (this.isIframe) {
-      this.scrollX = this.contentWindow?.scrollX || 0
-      this.scrollY = this.contentWindow?.scrollY || 0
-      this.width = this.contentWindow?.innerWidth || 0
-      this.height = this.contentWindow?.innerHeight || 0
+      data.scrollX = this.contentWindow?.scrollX || 0
+      data.scrollY = this.contentWindow?.scrollY || 0
+      data.width = this.contentWindow?.innerWidth || 0
+      data.height = this.contentWindow?.innerHeight || 0
     } else if (this.viewportElement) {
-      this.scrollX = this.viewportElement?.scrollLeft || 0
-      this.scrollY = this.viewportElement?.scrollTop || 0
-      this.width = this.viewportElement?.clientWidth || 0
-      this.height = this.viewportElement?.clientHeight || 0
+      data.scrollX = this.viewportElement?.scrollLeft || 0
+      data.scrollY = this.viewportElement?.scrollTop || 0
+      data.width = this.viewportElement?.clientWidth || 0
+      data.height = this.viewportElement?.clientHeight || 0
     }
+    return data
+  }
+
+  takeDragStartSnapshot() {
+    this.dragStartSnapshot = this.getCurrentData()
+  }
+
+  digestViewport() {
+    Object.assign(this, this.getCurrentData())
   }
 
   elementFromPoint(point: IPoint) {
@@ -209,8 +255,9 @@ export class Viewport {
 
   isPointInViewport(point: IPoint, sensitive?: boolean) {
     if (!this.rect) return false
-    if (!this.containsElement(document.elementFromPoint(point.x, point.y)))
+    if (!this.containsElement(document.elementFromPoint(point.x, point.y))) {
       return false
+    }
     return isPointInRect(point, this.rect, sensitive)
   }
 
@@ -262,19 +309,14 @@ export class Viewport {
   }
 
   getOffsetPoint(topPoint: IPoint) {
-    if (this.isIframe) {
-      return {
-        x: topPoint.x - this.offsetX + (this.contentWindow?.scrollX ?? 0),
-        y: topPoint.y - this.offsetY + (this.contentWindow?.scrollY ?? 0),
-      }
-    } else {
-      return {
-        x: topPoint.x - this.offsetX + (this.viewportElement?.scrollLeft ?? 0),
-        y: topPoint.y - this.offsetY + (this.viewportElement?.scrollTop ?? 0),
-      }
+    const data = this.getCurrentData()
+    return {
+      x: topPoint.x - this.offsetX + data.scrollX,
+      y: topPoint.y - this.offsetY + data.scrollY,
     }
   }
 
+  //相对于页面
   getElementRect(element: HTMLElement | Element) {
     const rect = element.getBoundingClientRect()
     const offsetWidth = element['offsetWidth']
@@ -294,10 +336,7 @@ export class Viewport {
     )
   }
 
-  /**
-   * 相对于主屏幕
-   * @param id
-   */
+  //相对于页面
   getElementRectById(id: string) {
     const elements = this.findElementsById(id)
     const rect = calcBoundingRect(
@@ -323,10 +362,37 @@ export class Viewport {
     }
   }
 
-  /**
-   * 相对于视口
-   * @param id
-   */
+  //相对于视口
+  getElementOffsetRect(element: HTMLElement | Element) {
+    const elementRect = element.getBoundingClientRect()
+    if (elementRect) {
+      if (this.isIframe) {
+        return (
+          typeof DOMRect !== 'undefined' &&
+          new DOMRect(
+            elementRect.x + this.contentWindow.scrollX,
+            elementRect.y + this.contentWindow.scrollY,
+            elementRect.width,
+            elementRect.height
+          )
+        )
+      } else {
+        return (
+          typeof DOMRect !== 'undefined' &&
+          new DOMRect(
+            (elementRect.x - this.offsetX + this.viewportElement.scrollLeft) /
+              this.scale,
+            (elementRect.y - this.offsetY + this.viewportElement.scrollTop) /
+              this.scale,
+            elementRect.width,
+            elementRect.height
+          )
+        )
+      }
+    }
+  }
+
+  //相对于视口
   getElementOffsetRectById(id: string) {
     const elements = this.findElementsById(id)
     if (!elements.length) return

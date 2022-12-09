@@ -5,7 +5,7 @@ import {
   DragStartEvent,
   DragMoveEvent,
   DragStopEvent,
-  ScreenStatus,
+  CursorDragType,
 } from '@designable/core'
 import {
   calcSpeedFactor,
@@ -63,18 +63,18 @@ const useResizeEffect = (
   engine.subscribeTo(DragStartEvent, (e) => {
     if (!engine.workbench.currentWorkspace?.viewport) return
     const target = e.data.target as HTMLElement
-    if (target?.closest('*[data-designer-resize-handle]')) {
+    if (target?.closest(`*[${engine.props.screenResizeHandlerAttrName}]`)) {
       const rect = content.current?.getBoundingClientRect()
       if (!rect) return
       status = target.getAttribute(
-        'data-designer-resize-handle'
+        engine.props.screenResizeHandlerAttrName
       ) as ResizeHandleType
       engine.cursor.setStyle(getStyle(status))
       startX = e.data.topClientX
       startY = e.data.topClientY
       startWidth = rect.width
       startHeight = rect.height
-      engine.screen.setStatus(ScreenStatus.Resizing)
+      engine.cursor.setDragType(CursorDragType.Resize)
     }
   })
   engine.subscribeTo(DragMoveEvent, (e) => {
@@ -116,7 +116,7 @@ const useResizeEffect = (
     if (!status) return
     status = null
     engine.cursor.setStyle('')
-    engine.screen.setStatus(ScreenStatus.Normal)
+    engine.cursor.setDragType(CursorDragType.Move)
     if (animationX) {
       animationX = animationX()
     }

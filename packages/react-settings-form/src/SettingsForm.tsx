@@ -7,7 +7,7 @@ import {
   usePrefix,
   useSelected,
   useOperation,
-  useCurrentNode,
+  useSelectedNode,
   useWorkbench,
   IconWidget,
   NodePathWidget,
@@ -33,7 +33,7 @@ export const SettingsForm: React.FC<
       workbench?.activeWorkspace || workbench?.currentWorkspace
     const currentWorkspaceId = currentWorkspace?.id
     const operation = useOperation(currentWorkspaceId)
-    const node = useCurrentNode(currentWorkspaceId)
+    const node = useSelectedNode(currentWorkspaceId)
     const selected = useSelected(currentWorkspaceId)
     const prefix = usePrefix('settings-form')
     const schema = node?.designerProps?.propsSchema
